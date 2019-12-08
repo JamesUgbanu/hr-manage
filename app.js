@@ -10,8 +10,11 @@ app.use(bodyParser.urlencoded({
   }));
   app.use(bodyParser.json());
 
-  app.get('/', (req, res) => res.status(200).json("Welcome to the homepage"));
-  
+  app.get('/', (req, res) => res.status(200).json({
+      status: 200,
+      success:"Welcome to the homepage",
+    }));
+
   // declare 404 route
 app.all('*', (req, res) => res.status(404).json({
     status: 404,
