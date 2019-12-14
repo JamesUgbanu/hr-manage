@@ -20,4 +20,22 @@ describe('Test user endpoints', () => {
         });
     });
   });
+  describe('add user endpoint', () => {
+    it('should add a new user', (done) => {
+      request(app)
+        .post('/api/v1/auth/addUser')
+        .send({
+          firstName: 'James',
+          lastName: 'Doe',
+          email: 'johndoe@gmail.com'
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(201)
+        .end((err, res) => {
+          expect(res.body.data.email).to.equal('johndoe@gmail.com');
+          done();
+        });
+    });
+  });
 });
