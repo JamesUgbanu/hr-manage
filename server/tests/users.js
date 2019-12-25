@@ -1,6 +1,7 @@
 import request from 'supertest';
 import chai from 'chai';
 import app from '../../app';
+import { application } from 'express';
 
 const { expect } = chai;
 /**
@@ -8,7 +9,7 @@ const { expect } = chai;
  */
 describe('Test user endpoints', () => {
   describe('retrieve users endpoint', () => {
-    it('should return all existing products', (done) => {
+    it('should return all existing products', done => {
       request(app)
         .get('/')
         .set('Accept', 'application/json')
@@ -19,5 +20,15 @@ describe('Test user endpoints', () => {
           done();
         });
     });
+  });
+  //Retrieve all users
+  it('It should get all users', done => {
+    request(app)
+      .get('/api/v1/users')
+      .set('Accept', 'application/json')
+      .end((err, res) => {
+        expect(res.body.message).to.equal('retrieve all users successfully');
+        done();
+      });
   });
 });
