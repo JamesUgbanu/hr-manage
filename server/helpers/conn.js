@@ -18,5 +18,4 @@ const connection = () => {
   return client;
 };
 
-
 export default connection;
