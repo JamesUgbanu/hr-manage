@@ -31,4 +31,17 @@ describe('Test user endpoints', () => {
         done();
       });
   });
+  //Retrieve a single user
+  it('It should get a single user', done => {
+    const id = 1;
+    request(app)
+      .get(`/api/v1/users/${id}`)
+      .set('Accept', 'application/json')
+      .end((err, res) => {
+        expect(res.body.message).to.equal(
+          'retrieve a single user successfully'
+        );
+        done();
+      });
+  });
 });
