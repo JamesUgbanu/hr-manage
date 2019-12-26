@@ -41,6 +41,32 @@ class UsersController {
       });
     });
   }
+
+  // @desc     Create new user
+  // @route    POST /api/v1/users
+  // @access   Private
+  static createUser(req, res) {
+    const { firstName, lastName, email } = req.body;
+
+    const query = {
+      text:
+        'INSERT INTO users(first_name, last_name, email) VALUES ($1, $2, $3) RETURNING *',
+      values: [firstName, lastName, email]
+    };
+    UsersController.create(req, res, query);
+  }
+
+  static create(req, res, query) {
+    client
+      .query(query)
+      .then(result => {
+        return res.status(200).json({
+          message: 'A new user created successfully',
+          data: result.rows[0]
+        });
+      })
+      .catch(error => console.log(error));
+  }
 }
 
 export default UsersController;

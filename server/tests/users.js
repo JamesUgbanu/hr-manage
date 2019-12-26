@@ -44,4 +44,27 @@ describe('Test user endpoints', () => {
         done();
       });
   });
+
+  //Create a new user
+  it('It should create a new user', done => {
+    const user = {
+      firstName: 'tunde',
+      lastName: 'babatunde',
+      email: 'test.test@gmail.com'
+    };
+    request(app)
+      .post('/api/v1/createUser')
+      .set('Accept', 'application/json')
+      .send(user)
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.data).to.include({
+          id: 2,
+          first_name: user.firstName,
+          last_name: user.lastName,
+          email: user.email
+        });
+        done();
+      });
+  });
 });
