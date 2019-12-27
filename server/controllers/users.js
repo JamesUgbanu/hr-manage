@@ -37,7 +37,7 @@ class UsersController {
     client.query(query).then(result => {
       res.status(200).json({
         message: 'retrieve a single user successfully',
-        data: result.rows
+        data: result.rows[0]
       });
     });
   }
@@ -66,6 +66,30 @@ class UsersController {
         });
       })
       .catch(error => console.log(error));
+  }
+
+  // @desc     Update user
+  // @route    PUT /api/v1/users/:id
+  // @access   Private
+  static updateUser(req, res) {
+    const id = parseInt(req.params.id);
+    const { firstName, lastName, email } = req.body;
+
+    const query = {
+      text:
+        'UPDATE users SET first_name = $1, last_name = $2, email = $3  WHERE id = $4 ',
+      values: [firstName, lastName, email, id]
+    };
+
+    UsersController.findByIdAndUpdate(req, res, query);
+  }
+
+  static findByIdAndUpdate(req, res, query) {
+    client.query(query).then(result => {
+      return res.status(200).json({
+        message: 'Update Successfully'
+      });
+    });
   }
 }
 
