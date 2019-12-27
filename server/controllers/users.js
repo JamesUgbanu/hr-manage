@@ -37,7 +37,7 @@ class UsersController {
     client.query(query).then(result => {
       res.status(200).json({
         message: 'retrieve a single user successfully',
-        data: result.rows[0]
+        data: result.rows
       });
     });
   }
@@ -88,6 +88,26 @@ class UsersController {
     client.query(query).then(result => {
       return res.status(200).json({
         message: 'Update Successfully'
+      });
+    });
+  }
+
+  // @desc     Delete user
+  // @route    PUT /api/v1/users/:id
+  // @access   Private
+  static deleteUser(req, res) {
+    const id = parseInt(req.params.id);
+
+    const query = `DELETE FROM users WHERE id= '${id}'`;
+
+    UsersController.findByIdAndDelete(req, res, query);
+  }
+
+  static findByIdAndDelete(req, res, query) {
+    client.query(query).then(result => {
+      return res.status(200).json({
+        message: 'User deleted successfully',
+        data: {}
       });
     });
   }

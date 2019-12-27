@@ -102,4 +102,16 @@ describe('Test user endpoints', () => {
         done();
       });
   });
+  // Delete user
+  it('It should delete a user', done => {
+    const userId = 5;
+    request(app)
+      .delete(`/api/v1/users/${userId}`)
+      .set('Accept', 'application/json')
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.data).to.include({});
+        done();
+      });
+  });
 });
