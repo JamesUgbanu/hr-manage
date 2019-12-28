@@ -45,7 +45,7 @@ describe('Test user endpoints', () => {
       });
   });
 
-  //Create a new user
+  //Create a new
   it('It should create a new user', done => {
     const user = {
       firstName: 'tunde',
@@ -57,7 +57,7 @@ describe('Test user endpoints', () => {
       .set('Accept', 'application/json')
       .send(user)
       .end((err, res) => {
-        expect(res.status).to.equal(200);
+        expect(res.status).to.equal(201);
         expect(res.body.data).to.include({
           id: 2,
           first_name: user.firstName,
@@ -99,18 +99,6 @@ describe('Test user endpoints', () => {
       .end((err, res) => {
         expect(res.status).to.equal(200);
         expect(res.body.message).to.equal('Update Successfully');
-        done();
-      });
-  });
-  // Delete user
-  it('It should delete a user', done => {
-    const userId = 5;
-    request(app)
-      .delete(`/api/v1/users/${userId}`)
-      .set('Accept', 'application/json')
-      .end((err, res) => {
-        expect(res.status).to.equal(200);
-        expect(res.body.data).to.include({});
         done();
       });
   });

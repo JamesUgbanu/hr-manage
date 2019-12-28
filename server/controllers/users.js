@@ -14,12 +14,18 @@ class UsersController {
   }
 
   static find(query, res) {
-    client.query(query).then(result => {
-      res.status(200).json({
-        message: 'retrieve all users successfully',
-        data: result.rows
+    try {
+      client.query(query).then(results => {
+        res.status(200).json({
+          success: true,
+          count: results.rowCount,
+          message: 'retrieve all users successfully',
+          data: results.rows
+        });
       });
-    });
+    } catch (error) {
+      res.status(400).json({ success: false, message: 'Server Error' });
+    }
   }
 
   // @desc     Get single user
@@ -34,12 +40,22 @@ class UsersController {
   }
 
   static findById(query, res) {
-    client.query(query).then(result => {
-      res.status(200).json({
-        message: 'retrieve a single user successfully',
-        data: result.rows
+    try {
+      client.query(query).then(result => {
+        if (result.rowCount == 0) {
+          return res.status(400).json({ success: false, message: 'Not found' });
+        }
+        //res.status(200).json({ success: true, data: result.rows });
+
+        res.status(200).json({
+          success: true,
+          message: 'retrieve a single user successfully',
+          data: result.rows[0]
+        });
       });
-    });
+    } catch (error) {
+      res.status(400).json({ success: false, message: 'Invalid Request' });
+    }
   }
 
   // @desc     Create new user
@@ -57,15 +73,16 @@ class UsersController {
   }
 
   static create(req, res, query) {
-    client
-      .query(query)
-      .then(result => {
-        return res.status(200).json({
+    try {
+      client.query(query).then(result => {
+        return res.status(201).json({
           message: 'A new user created successfully',
           data: result.rows[0]
         });
-      })
-      .catch(error => console.log(error));
+      });
+    } catch (error) {
+      return res.status(400).json({ success: false });
+    }
   }
 
   // @desc     Update user
@@ -85,11 +102,20 @@ class UsersController {
   }
 
   static findByIdAndUpdate(req, res, query) {
-    client.query(query).then(result => {
-      return res.status(200).json({
-        message: 'Update Successfully'
+    try {
+      client.query(query).then(result => {
+        if (result.rowCount == 0) {
+          return res.status(400).json({ success: false });
+        }
+        return res.status(200).json({
+          success: true,
+          message: 'Update Successfully',
+          data: result.rows
+        });
       });
-    });
+    } catch (error) {
+      return res.status(400).json({ success: false });
+    }
   }
 
   // @desc     Delete user
