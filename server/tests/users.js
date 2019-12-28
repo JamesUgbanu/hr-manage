@@ -45,7 +45,7 @@ describe('Test user endpoints', () => {
       });
   });
 
-  //Create a new user
+  //Create a new
   it('It should create a new user', done => {
     const user = {
       firstName: 'tunde',
@@ -57,7 +57,7 @@ describe('Test user endpoints', () => {
       .set('Accept', 'application/json')
       .send(user)
       .end((err, res) => {
-        expect(res.status).to.equal(200);
+        expect(res.status).to.equal(201);
         expect(res.body.data).to.include({
           id: 2,
           first_name: user.firstName,
