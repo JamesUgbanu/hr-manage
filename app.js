@@ -1,9 +1,17 @@
 import Express from 'express';
+import connection from './server/helpers/conn';
 import bodyParser from 'body-parser';
 import routes from './server/routes/users';
+import cors from 'cors';
+
+const client = connection();
+client.connect();
+
 // declare constants
 const app = new Express();
 const port = process.env.PORT;
+//middleware
+app.use(cors());
 
 app.use(
   bodyParser.urlencoded({

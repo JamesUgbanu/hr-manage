@@ -15,5 +15,21 @@ CREATE TABLE IF NOT EXISTS users(
   UNIQUE (email)
 );
 `;
-const createQuery = `${createUserTable}`;
+
+const createLeaveRequestTable = `
+  CREATE TABLE IF NOT EXISTS leaverequests(
+    user_id uuid DEFAULT uuid_generate_v4 (),
+    duration INTEGER NOT NULL,
+    start_date TIMESTAMP WITH TIME ZONE,
+    end_date TIMESTAMP WITH TIME ZONE,
+    leave_type VARCHAR(40),
+    description TEXT,
+    status VARCHAR(10) DEFAULT 'pending',
+    created_on TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    PRIMARY KEY (user_id)
+  );
+`;
+
+const createQuery = `${createUserTable}${createLeaveRequestTable}`;
+
 export default createQuery;
