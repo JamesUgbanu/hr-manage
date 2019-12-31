@@ -28,6 +28,11 @@ describe('Test user endpoints', () => {
       .set('Accept', 'application/json')
       .end((err, res) => {
         expect(res.body.message).to.equal('retrieve all users successfully');
+        expect(res.body).to.be.an('object');
+        expect(res.body.data[0]).to.have.property('id');
+        expect(res.body.data[0]).to.have.property('first_name');
+        expect(res.body.data[0]).to.have.property('last_name');
+        expect(res.body.data[0]).to.have.property('email');
         done();
       });
   });
@@ -35,12 +40,36 @@ describe('Test user endpoints', () => {
   it('It should get a single user', done => {
     const id = 1;
     request(app)
-      .get(`/api/v1/users/${id}`)
+      .get(`/api/v1/user/${id}`)
       .set('Accept', 'application/json')
       .end((err, res) => {
         expect(res.body.message).to.equal(
           'retrieve a single user successfully'
         );
+        done();
+      });
+  });
+
+  it('It should not get user with invalid id', done => {
+    const id = 8888;
+    request(app)
+      .get(`/api/v1/user/${id}`)
+      .set('Accept', 'application/json')
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        expect(res.body.message).to.equal(`Cannot find user with the id ${id}`);
+        done();
+      });
+  });
+
+  it('It should not get user with non-numeric id', done => {
+    const id = 'aaa';
+    request(app)
+      .get(`/api/v1/user/${id}`)
+      .set('Accept', 'application/json')
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        expect(res.body.message).to.equal('Please input a valid numeric value');
         done();
       });
   });
@@ -68,35 +97,6 @@ describe('Test user endpoints', () => {
       });
   });
 
-  //Create a new leave request
-  /* it('It should create a new leave request', done => {
-    const leave = {
-      duration: '5',
-      start_date: '2019-07-20 13:12:29',
-      end_date: '2019-07-25 13:12:29',
-      leave_type: 'casual',
-      description: 'casual leave',
-      status: 'pending'
-    };
-    request(app)
-      .post('/api/v1/leaverequests')
-      .set('Accept', 'application/json')
-      .send(leave)
-      .end((err, res) => {
-        expect(res.status).to.equal(201);
-        expect(res.body.data).to.include({
-          user_id: leave.user_id,
-          duration: leave.duration,
-          start_date: leave.start_date,
-          end_date: leave.end_date,
-          leave_type: leave.leave_type,
-          description: leave.description,
-          status: leave.status
-        });
-        done();
-      });
-  }); */
-
   /*  it('It should not create a user with incomplete parameters', done => {
     const user = {
       firstName: 'tunde',
@@ -104,11 +104,11 @@ describe('Test user endpoints', () => {
       email: ''
     };
     request(app)
-      .post('/api/v1/createUser')
+      .post('/api/v1/users')
       .set('Accept', 'application/json')
       .send(user)
       .end((err, res) => {
-        expect(res.status).to.equal(200);
+        expect(res.status).to.equal(400);
         done();
       });
   }); */
@@ -131,4 +131,130 @@ describe('Test user endpoints', () => {
         done();
       });
   });
+
+  it('It should not update a user with invalid id', done => {
+    const id = '9999';
+    const updatedUser = {
+      id: id,
+      firstName: 'james',
+      lastName: 'Ugbanu',
+      email: 'jamesugbanu@gmail.com'
+    };
+    request(app)
+      .put(`/api/v1/users/${id}`)
+      .set('Accept', 'application/json')
+      .send(updatedUser)
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        expect(res.body.message).to.equal(`Cannot find user with the id ${id}`);
+        done();
+      });
+  });
+
+  it('It should not update a user with non-numeric id value', done => {
+    const id = 'ggg';
+    const updatedUser = {
+      id: id,
+      firstName: 'james',
+      lastName: 'Ugbanu',
+      email: 'jamesugbanu@gmail.com'
+    };
+    request(app)
+      .put(`/api/v1/users/${id}`)
+      .set('Accept', 'application/json')
+      .send(updatedUser)
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        expect(res.body.message).to.equal('Please input a valid numeric value');
+        done();
+      });
+  });
+
+  it('It should delete a user', done => {
+    const id = 1;
+    request(app)
+      .delete(`/api/v1/users/${id}`)
+      .set('Accept', 'application/json')
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.message).to.equal('User deleted successfully');
+        done();
+      });
+  });
+  it('It should not delete a user with non-numeric id', done => {
+    const id = 'tt';
+    request(app)
+      .delete(`/api/v1/users/${id}`)
+      .set('Accept', 'application/json')
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        done();
+      });
+  });
+
+  //Create a new leave request
+  it('It should create a new leave request', done => {
+    const leave = {
+      duration: '4',
+      start_date: '2019-07-20 13:12:29',
+      end_date: '2019-07-25 13:12:29',
+      leave_type: 'sick leave',
+      description: 'sick leave',
+      status: 'pending'
+    };
+    request(app)
+      .post('/api/v1/leaverequests')
+      .set('Accept', 'application/json')
+      .send(leave)
+      .end((err, res) => {
+        expect(res.status).to.equal(201);
+        expect(res.body).to.be.an('object');
+        expect(res.body.message).to.equal(
+          'A new leave requests created successfully'
+        );
+        /*  expect(res.body.data).to.include({
+          user_id: '08945f72-488f-4dfb-8e6f-ff008bf30fb6',
+          duration: leave.duration,
+          start_date: leave.start_date,
+          end_date: leave.end_date,
+          leave_type: leave.leave_type,
+          description: leave.description,
+          status: leave.status
+        }); */
+        done();
+      });
+  });
+
+  it('It should create leave request with incomplete parameters', done => {
+    const leave = {
+      duration: '4',
+      start_date: '2019-07-20 13:12:29',
+      end_date: '2019-07-25 13:12:29',
+      leave_type: 'sick leave',
+      description: 'sick leave'
+    };
+    request(app)
+      .post('/api/v1/leaverequests')
+      .set('Accept', 'application/json')
+      .send(leave)
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        expect(res.body).to.be.an('object');
+        expect(res.body.message).to.equal('Please provide complete details');
+        done();
+      });
+  });
+
+  /* Leave Request Test */
+  /* it('It should get all leave requests', done => {
+    request(app)
+      .get('/api/v1/leaverequests')
+      .set('Accept', 'application/json')
+      .end((err, res) => {
+        expect(res.body.message).to.equal(
+          'retrieve all leave requests successfully'
+        );
+        done();
+      });
+  }); */
 });
