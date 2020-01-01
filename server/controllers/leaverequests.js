@@ -1,18 +1,11 @@
-import connection from '../helpers/conn';
-
-const client = connection();
-client.connect();
+import queryDb from '../helpers/db';
 
 class LeaveController {
-  // @desc     Create new user
-  // @route    POST /api/v1/users
+  // @desc     Create new leave requests
+  // @route    POST /api/v1/leaverequests
   // @access   Private
 
   static createLeaveRequests(req, res) {
-    LeaveController.create(req, res);
-  }
-
-  static create(req, res) {
     const {
       duration,
       start_date,
@@ -46,13 +39,12 @@ class LeaveController {
           status
         ]
       };
-
-      client.query(query).then(result => {
-        return res.status(201).json({
-          message: 'A new leave requests created successfully',
-          data: result.rows[0]
-        });
-      });
+      queryDb.dbQuery(
+        res,
+        query,
+        'A new leave requests created successfully',
+        'Leave request not found'
+      );
     }
   }
 }
