@@ -55,14 +55,14 @@ describe('Test leave requests endpoints', () => {
       .set('Accept', 'application/json')
       .send(leave)
       .end((err, res) => {
-        expect(res.status).to.equal(404);
-        expect(res.body).to.be.an('object');
+        expect(res.status).to.equal(400);
+        expect(res.body.message).to.equal('Please provide complete details');
         done();
       });
   });
 
   /* Leave Request Test */
-  /* it('It should get all leave requests', done => {
+  it('It should get all leave requests', done => {
     request(app)
       .get('/api/v1/leaverequests')
       .set('Accept', 'application/json')
@@ -72,5 +72,5 @@ describe('Test leave requests endpoints', () => {
         );
         done();
       });
-  }); */
+  });
 });

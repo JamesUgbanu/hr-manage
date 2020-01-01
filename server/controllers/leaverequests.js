@@ -1,10 +1,22 @@
 import queryDb from '../helpers/db';
 
 class LeaveController {
+  // @desc     Get all leave requests
+  // @route    GET /api/v1/leaverequests
+  // @access   Public
+  static getLeaveRequests(req, res) {
+    const query = 'SELECT * FROM leaverequests';
+    queryDb.dbQuery(
+      res,
+      query,
+      'retrieve all leave requests successfully',
+      'Leave requests not found'
+    );
+  }
+
   // @desc     Create new leave requests
   // @route    POST /api/v1/leaverequests
   // @access   Private
-
   static createLeaveRequests(req, res) {
     const {
       duration,
@@ -14,7 +26,6 @@ class LeaveController {
       description,
       status
     } = req.body;
-
     if (
       !duration ||
       !start_date ||
