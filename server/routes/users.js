@@ -1,5 +1,5 @@
 import UsersController from '../controllers/users';
-//import LeaveController from '../controllers/leaverequests';
+import LeaveController from '../controllers/leaverequests';
 
 const routes = app => {
   app.get('/api/v1/users', UsersController.getUsers);
@@ -7,7 +7,8 @@ const routes = app => {
   app.post('/api/v1/users', UsersController.createUser);
   app.put('/api/v1/users/:id', UsersController.updateUser);
   app.delete('/api/v1/users/:id', UsersController.deleteUser);
-  // app.post('/api/v1/leaverequests', LeaveController.createLeaveRequests);
+  app.get('/api/v1/leaverequests', LeaveController.getLeaveRequests);
+  app.post('/api/v1/leaverequests', LeaveController.createLeaveRequests);
 };
 
 export default routes;
