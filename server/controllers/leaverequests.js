@@ -72,6 +72,42 @@ class LeaveController {
       );
     }
   }
+
+  // @desc     Update leaverequests
+  // @route    PUT /api/v1/leaverequests/:id
+  // @access   Private
+  static updateLeaveRequest(req, res) {
+    const leave_id = req.params.id;
+
+    const {
+      duration,
+      start_date,
+      end_date,
+      leave_type,
+      description,
+      status
+    } = req.body;
+
+    const query = {
+      text:
+        'UPDATE leaverequests SET duration = $1, start_date = $2, end_date = $3, leave_type = $4, description = $5, status = $6 WHERE leave_id = $7 ',
+      values: [
+        duration,
+        start_date,
+        end_date,
+        leave_type,
+        description,
+        status,
+        leave_id
+      ]
+    };
+    queryDb.dbQuery(
+      res,
+      query,
+      'Update leave request successfully',
+      `Cannot find leave request with the id ${leave_id}`
+    );
+  }
 }
 
 export default LeaveController;
