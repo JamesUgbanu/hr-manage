@@ -14,6 +14,20 @@ class LeaveController {
     );
   }
 
+  // @desc     Get single leave requests
+  // @route    GET /api/v1/leaverequests/:id
+  // @access   Public
+  static getLeaveRequestsById(req, res) {
+    const id = req.params.id;
+    const query = `SELECT * FROM leaverequests WHERE leave_id = '${id}'`;
+    queryDb.dbQuery(
+      res,
+      query,
+      'get single leave request successfully',
+      `Cannot find leave request with the id ${id}`
+    );
+  }
+
   // @desc     Create new leave requests
   // @route    POST /api/v1/leaverequests
   // @access   Private

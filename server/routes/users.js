@@ -8,6 +8,7 @@ const routes = app => {
   app.put('/api/v1/users/:id', UsersController.updateUser);
   app.delete('/api/v1/users/:id', UsersController.deleteUser);
   app.get('/api/v1/leaverequests', LeaveController.getLeaveRequests);
+  app.get('/api/v1/leaverequests/:id', LeaveController.getLeaveRequestsById);
   app.post('/api/v1/leaverequests', LeaveController.createLeaveRequests);
 };
 
