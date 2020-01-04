@@ -92,7 +92,7 @@ describe('Test leave requests endpoints', () => {
       });
   });
 
-  it('It should update leave request', done => {
+  /* it('It should update leave request', done => {
     // const id = '0bd16bf2-e389-4719-882c-c02337122827';
     const updatedLeave = {
       duration: 10,
@@ -111,7 +111,7 @@ describe('Test leave requests endpoints', () => {
         done();
       });
   });
-
+ 
   it('It should not update leave request with invalid id', done => {
     const id = '0bd16bf2-e389-4719-882c-c02337122827';
     const updatedLeave = {
@@ -129,6 +129,40 @@ describe('Test leave requests endpoints', () => {
       .end((err, res) => {
         expect(res.status).to.equal(400);
         `Cannot find leave request with the id ${id}`;
+        done();
+      });
+  });
+  */
+
+  // Update leave status test
+  it('It should update leave request status ', done => {
+    //const id = '3c28e58e-4d08-4d0f-8869-c1fc38a8b4d5';
+    const updatedLeaveStatus = {
+      status: 'pending'
+    };
+    request(app)
+      .put(`/api/v1/leaverequests/${taskId}`)
+      .set('Accept', 'application/json')
+      .send(updatedLeaveStatus)
+      .end((err, res) => {
+        expect(res.body.message).to.equal(
+          'Update leave request status successfully'
+        );
+        done();
+      });
+  });
+
+  it('It should not update leave request status', done => {
+    const id = '3c28e58e-4d08-4d0f-8869-c1fc38a8b4d5';
+    const updatedLeaveStatus = {
+      status: 'approved'
+    };
+    request(app)
+      .put(`/api/v1/leaverequests/${id}`)
+      .set('Accept', 'application/json')
+      .send(updatedLeaveStatus)
+      .end((err, res) => {
+        expect(res.body.message).to.equal('Error occurs Please try again');
         done();
       });
   });
