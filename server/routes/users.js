@@ -10,6 +10,7 @@ const routes = app => {
   app.get('/api/v1/leaverequests', LeaveController.getLeaveRequests);
   app.get('/api/v1/leaverequests/:id', LeaveController.getLeaveRequestsById);
   app.post('/api/v1/leaverequests', LeaveController.createLeaveRequests);
+  app.put('/api/v1/leaverequests/:id', LeaveController.updateLeaveRequest);
 };
 
 export default routes;

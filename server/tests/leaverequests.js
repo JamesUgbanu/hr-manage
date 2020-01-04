@@ -91,4 +91,45 @@ describe('Test leave requests endpoints', () => {
         done();
       });
   });
+
+  it('It should update leave request', done => {
+    // const id = '0bd16bf2-e389-4719-882c-c02337122827';
+    const updatedLeave = {
+      duration: 10,
+      start_date: '2019-07-20 13:12:29',
+      end_date: '2019-07-25 13:12:29',
+      leave_type: 'leave',
+      description: 'leave',
+      status: 'pending'
+    };
+    request(app)
+      .put(`/api/v1/leaverequests/${taskId}`)
+      .set('Accept', 'application/json')
+      .send(updatedLeave)
+      .end((err, res) => {
+        expect(res.body.message).to.equal('Update leave request successfully');
+        done();
+      });
+  });
+
+  it('It should not update leave request with invalid id', done => {
+    const id = '0bd16bf2-e389-4719-882c-c02337122827';
+    const updatedLeave = {
+      duration: 10,
+      start_date: '2019-07-20 13:12:29',
+      end_date: '2019-07-25 13:12:29',
+      leave_type: 'leave',
+      description: 'leave',
+      status: 'pending'
+    };
+    request(app)
+      .put(`/api/v1/leaverequests/${id}`)
+      .set('Accept', 'application/json')
+      .send(updatedLeave)
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        `Cannot find leave request with the id ${id}`;
+        done();
+      });
+  });
 });
