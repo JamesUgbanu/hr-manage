@@ -1,7 +1,8 @@
 import Express from 'express';
 import connection from './server/helpers/conn';
 import bodyParser from 'body-parser';
-import routes from './server/routes/users';
+import userRoutes from './server/routes/users';
+import leaveRoutes from './server/routes/leaverequests';
 import cors from 'cors';
 
 const client = connection();
@@ -20,7 +21,8 @@ app.use(
 );
 app.use(bodyParser.json());
 
-routes(app);
+userRoutes(app);
+leaveRoutes(app);
 
 app.get('/', (req, res) =>
   res.status(200).json({

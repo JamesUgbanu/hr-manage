@@ -40,43 +40,25 @@ class LeaveController {
       description,
       status
     } = req.body;
-    if (
-      !duration ||
-      !start_date ||
-      !end_date ||
-      !leave_type ||
-      !description ||
-      !status
-    ) {
-      res
-        .status(400)
-        .json({ success: false, message: 'Please provide complete details' });
-    } else {
-      const query = {
-        text:
-          'INSERT INTO leaverequests(duration, start_date, end_date, leave_type, description, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-        values: [
-          duration,
-          start_date,
-          end_date,
-          leave_type,
-          description,
-          status
-        ]
-      };
-      queryDb.dbQuery(
-        res,
-        query,
-        'A new leave requests created successfully',
-        'Leave request not found'
-      );
-    }
+
+    const query = {
+      text:
+        'INSERT INTO leaverequests(duration, start_date, end_date, leave_type, description, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+
+      values: [duration, start_date, end_date, leave_type, description, status]
+    };
+    queryDb.dbQuery(
+      res,
+      query,
+      'A new leave requests created successfully',
+      'Leave request not found'
+    );
   }
 
   // @desc     Update leaverequests
   // @route    PUT /api/v1/leaverequests/:id
   // @access   Private
-  /* static updateLeaveRequest(req, res) {
+  /*  static updateLeaveRequest(req, res) {
     const leave_id = req.params.id;
     const {
       duration,

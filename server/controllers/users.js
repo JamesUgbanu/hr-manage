@@ -39,6 +39,20 @@ class UsersController {
   // @access   Private
   static createUser(req, res) {
     const { firstName, lastName, email } = req.body;
+    const query = {
+      text:
+        'INSERT INTO users(first_name, last_name, email) VALUES ($1, $2, $3) RETURNING *',
+      values: [firstName, lastName, email]
+    };
+    queryDb.dbQuery(
+      res,
+      query,
+      'A new user created successfully',
+      'User not found'
+    );
+  }
+  /*  static createUser(req, res) {
+    const { firstName, lastName, email } = req.body;
     if (!firstName || !lastName || !email) {
       res
         .status(400)
@@ -56,7 +70,7 @@ class UsersController {
         'User not found'
       );
     }
-  }
+  } */
 
   // @desc     Update user
   // @route    PUT /api/v1/users/:id

@@ -74,7 +74,7 @@ describe('Test user endpoints', () => {
       });
   });
 
-  //Create a new user
+  //Create a new user when all inputs are supplied correctly
   it('It should create a new user', done => {
     const user = {
       firstName: 'james',
@@ -86,20 +86,85 @@ describe('Test user endpoints', () => {
       .set('Accept', 'application/json')
       .send(user)
       .end((err, res) => {
-        expect(res.status).to.equal(200);
-        expect(res.body).to.be.an('object');
         expect(res.body.message).to.equal('A new user created successfully');
-        /* expect(res.body.data).to.include({
-          id: 1,
-          first_name: user.firstName,
-          last_name: user.lastName,
-          email: user.email
-        }); */
         done();
       });
   });
 
-  it('It should not create a user with incomplete parameters', done => {
+  // test for empty first name
+  it('should request for first name when its not supplied', done => {
+    const user = {
+      firstName: '',
+      lastName: 'Ugbanu',
+      email: 'jamesugbanu1@gmail.com'
+    };
+    request(app)
+      .post('/api/v1/users')
+      .set('Accept', 'application/json')
+      .send(user)
+      .end((err, res) => {
+        expect(res.body.errors[0].msg).to.equal('First name is required');
+        done();
+      });
+  });
+
+  // test for any special character in first name
+  it('should request for removal of special characters', done => {
+    const user = {
+      firstName: 'tunex =+ #@',
+      lastName: 'tunex',
+      email: 'tunex@gmail.com'
+    };
+    request(app)
+      .post('/api/v1/users')
+      .set('Accept', 'application/json')
+      .send(user)
+      .end((err, res) => {
+        /*  console.log(res.body.errors[0].msg); */
+        expect(res.body.errors[0].msg).to.equal(
+          'First name should be alphabet'
+        );
+        done();
+      });
+  });
+
+  // test for empty last name
+  it('should request for last name when its not supplied', done => {
+    const user = {
+      firstName: 'james',
+      lastName: '',
+      email: 'jamesugbanu1@gmail.com'
+    };
+    request(app)
+      .post('/api/v1/users')
+      .set('Accept', 'application/json')
+      .send(user)
+      .end((err, res) => {
+        expect(res.body.errors[0].msg).to.equal('Last name is required');
+        done();
+      });
+  });
+
+  // test for any special character in last name
+  it('should request for removal of special characters in last name', done => {
+    const user = {
+      firstName: 'tunex',
+      lastName: 'tunex =+ #@',
+      email: 'tunex@gmail.com'
+    };
+    request(app)
+      .post('/api/v1/users')
+      .set('Accept', 'application/json')
+      .send(user)
+      .end((err, res) => {
+        /*  console.log(res.body.errors[0].msg); */
+        expect(res.body.errors[0].msg).to.equal('Last name should be alphabet');
+        done();
+      });
+  });
+
+  // test for empty email
+  it('should request for email when its not supplied', done => {
     const user = {
       firstName: 'james',
       lastName: 'Ugbanu',
@@ -110,7 +175,28 @@ describe('Test user endpoints', () => {
       .set('Accept', 'application/json')
       .send(user)
       .end((err, res) => {
-        expect(res.status).to.equal(400);
+        /* console.log(res.body); */
+        expect(res.body.errors[0].msg).to.equal('Email is required');
+        done();
+      });
+  });
+
+  // test for valid email address
+  it('should request for valid email when its not supplied', done => {
+    const user = {
+      firstName: 'james',
+      lastName: 'Ugbanu',
+      email: 'james'
+    };
+    request(app)
+      .post('/api/v1/users')
+      .set('Accept', 'application/json')
+      .send(user)
+      .end((err, res) => {
+        /* console.log(res.body); */
+        expect(res.body.errors[0].msg).to.equal(
+          'Please enter valid email address'
+        );
         done();
       });
   });
