@@ -1,15 +1,31 @@
 import request from 'supertest';
 import chai from 'chai';
 import app from '../../app';
-import { application } from 'express';
 
 const { expect } = chai;
+
 /**
  * Testing user endpoint
  */
+
+let token;
+
+before((done) => {
+  request(app)
+    .post('/api/v1/auth/login')
+    .send({
+      email: 'max@gmail.com',
+      password: 'password',
+    })
+    .end((error, response) => {
+      token = response.header['auth-token'];
+      //console.log(token);
+      done();
+    });
+});
 describe('Test user endpoints', () => {
   describe('retrieve users endpoint', () => {
-    it('should return all existing products', done => {
+    it('should return the homepage', (done) => {
       request(app)
         .get('/')
         .set('Accept', 'application/json')
@@ -21,242 +37,378 @@ describe('Test user endpoints', () => {
         });
     });
   });
-  //Retrieve all users
-  it('It should get all users', done => {
-    request(app)
-      .get('/api/v1/users')
-      .set('Accept', 'application/json')
-      .end((err, res) => {
-        expect(res.body.message).to.equal('retrieve all users successfully');
-        expect(res.body).to.be.an('object');
-        expect(res.body.data[0]).to.have.property('id');
-        expect(res.body.data[0]).to.have.property('first_name');
-        expect(res.body.data[0]).to.have.property('last_name');
-        expect(res.body.data[0]).to.have.property('email');
-        done();
-      });
-  });
-  //Retrieve a single user
-  it('It should get a single user', done => {
-    const id = 1;
-    request(app)
-      .get(`/api/v1/users/${id}`)
-      .set('Accept', 'application/json')
-      .end((err, res) => {
-        expect(res.body.message).to.equal(
-          'retrieve a single user successfully'
-        );
-        done();
-      });
-  });
 
-  it('It should not get user with invalid id', done => {
-    const id = 8888;
-    request(app)
-      .get(`/api/v1/users/${id}`)
-      .set('Accept', 'application/json')
-      .end((err, res) => {
-        expect(res.status).to.equal(400);
-        expect(res.body.message).to.equal(`Cannot find user with the id ${id}`);
-        done();
-      });
-  });
-
-  it('It should not get user with non-numeric id', done => {
-    const id = 'aaa';
-    request(app)
-      .get(`/api/v1/users/${id}`)
-      .set('Accept', 'application/json')
-      .end((err, res) => {
-        expect(res.status).to.equal(400);
-        expect(res.body.message).to.equal('Please input a valid numeric value');
-        done();
-      });
-  });
-
-  //Create a new user
-  it('It should create a new user', done => {
+  /* it('POST /api/v1/auth/register/: Should create a new user account.', (done) => {
     const user = {
-      firstName: 'james',
-      lastName: 'Ugbanu',
-      email: 'jamesugbanu1@gmail.com'
+      first_name: 'seliyat5',
+      last_name: 'seliyat5',
+      email: 'seliyat5@gmail.com',
+      password: 'password',
     };
     request(app)
-      .post('/api/v1/users')
+      .post('/api/v1/auth/register')
       .set('Accept', 'application/json')
       .send(user)
       .end((err, res) => {
-        expect(res.status).to.equal(200);
-        expect(res.body).to.be.an('object');
-        expect(res.body.message).to.equal('A new user created successfully');
-        /* expect(res.body.data).to.include({
-          id: 1,
-          first_name: user.firstName,
-          last_name: user.lastName,
-          email: user.email
-        }); */
-        done();
-      });
-  });
+        // expect(res.body).to.be.an('object');
+        // expect(res.status).to.equal(201);
+        expect(res.body.success).to.equal(true);
+        expect(res.body.data.email).to.equal(user.email);
 
-  it('It should not create a user with incomplete parameters', done => {
-    const user = {
-      firstName: 'james',
-      lastName: 'Ugbanu',
-      email: ''
-    };
-    request(app)
-      .post('/api/v1/users')
-      .set('Accept', 'application/json')
-      .send(user)
-      .end((err, res) => {
-        expect(res.status).to.equal(400);
-        done();
-      });
-  });
-
-  it('It should update user', done => {
-    const id = 1;
-    const updatedUser = {
-      id: id,
-      firstName: 'james',
-      lastName: 'Ugbanu',
-      email: 'jamesugbanu@gmail.com'
-    };
-    request(app)
-      .put(`/api/v1/users/${id}`)
-      .set('Accept', 'application/json')
-      .send(updatedUser)
-      .end((err, res) => {
-        expect(res.status).to.equal(200);
-        expect(res.body.message).to.equal('Update Successfully');
-        done();
-      });
-  });
-
-  it('It should not update a user with invalid id', done => {
-    const id = '9999';
-    const updatedUser = {
-      id: id,
-      firstName: 'james',
-      lastName: 'Ugbanu',
-      email: 'jamesugbanu@gmail.com'
-    };
-    request(app)
-      .put(`/api/v1/users/${id}`)
-      .set('Accept', 'application/json')
-      .send(updatedUser)
-      .end((err, res) => {
-        expect(res.status).to.equal(400);
-        expect(res.body.message).to.equal(`Cannot find user with the id ${id}`);
-        done();
-      });
-  });
-
-  it('It should not update a user with non-numeric id value', done => {
-    const id = 'ggg';
-    const updatedUser = {
-      id: id,
-      firstName: 'james',
-      lastName: 'Ugbanu',
-      email: 'jamesugbanu@gmail.com'
-    };
-    request(app)
-      .put(`/api/v1/users/${id}`)
-      .set('Accept', 'application/json')
-      .send(updatedUser)
-      .end((err, res) => {
-        expect(res.status).to.equal(400);
-        expect(res.body.message).to.equal('Please input a valid numeric value');
-        done();
-      });
-  });
-
-  it('It should delete a user', done => {
-    const id = 1;
-    request(app)
-      .delete(`/api/v1/users/${id}`)
-      .set('Accept', 'application/json')
-      .end((err, res) => {
-        expect(res.status).to.equal(200);
-        expect(res.body.message).to.equal('User deleted successfully');
-        done();
-      });
-  });
-  it('It should not delete a user with non-numeric id', done => {
-    const id = 'tt';
-    request(app)
-      .delete(`/api/v1/users/${id}`)
-      .set('Accept', 'application/json')
-      .end((err, res) => {
-        expect(res.status).to.equal(400);
-        done();
-      });
-  });
-
-  //Create a new leave request
-  // it('It should create a new leave request', done => {
-  //   const leave = {
-  //     duration: '4',
-  //     start_date: '2019-07-20 13:12:29',
-  //     end_date: '2019-07-25 13:12:29',
-  //     leave_type: 'sick leave',
-  //     description: 'sick leave',
-  //     status: 'pending'
-  //   };
-  //   request(app)
-  //     .post('/api/v1/leaverequests')
-  //     .set('Accept', 'application/json')
-  //     .send(leave)
-  //     .end((err, res) => {
-  //       expect(res.status).to.equal(201);
-  //       expect(res.body).to.be.an('object');
-  //       expect(res.body.message).to.equal(
-  //         'A new leave requests created successfully'
-  //       );
-  //       /*  expect(res.body.data).to.include({
-  //         user_id: '08945f72-488f-4dfb-8e6f-ff008bf30fb6',
-  //         duration: leave.duration,
-  //         start_date: leave.start_date,
-  //         end_date: leave.end_date,
-  //         leave_type: leave.leave_type,
-  //         description: leave.description,
-  //         status: leave.status
-  //       }); */
-  //       done();
-  //     });
-  // });
-
-  // it('It should create leave request with incomplete parameters', done => {
-  //   const leave = {
-  //     duration: '4',
-  //     start_date: '2019-07-20 13:12:29',
-  //     end_date: '2019-07-25 13:12:29',
-  //     leave_type: 'sick leave',
-  //     description: 'sick leave'
-  //   };
-  //   request(app)
-  //     .post('/api/v1/leaverequests')
-  //     .set('Accept', 'application/json')
-  //     .send(leave)
-  //     .end((err, res) => {
-  //       expect(res.status).to.equal(400);
-  //       expect(res.body).to.be.an('object');
-  //       expect(res.body.message).to.equal('Please provide complete details');
-  //       done();
-  //     });
-  // });
-
-  /* Leave Request Test */
-  /* it('It should get all leave requests', done => {
-    request(app)
-      .get('/api/v1/leaverequests')
-      .set('Accept', 'application/json')
-      .end((err, res) => {
-        expect(res.body.message).to.equal(
-          'retrieve all leave requests successfully'
-        );
+        expect(res.body).to.have.property('id');
+        expect(res.body).to.have.property('first_name');
+        expect(res.body).to.have.property('last_name');
+        expect(res.body).to.have.property('email');
+        expect(res.body).to.have.property('password');
         done();
       });
   }); */
+
+  it('should not register a user with an existing email address', (done) => {
+    const user = {
+      first_name: 'tmbabatunde',
+      last_name: 'tmbabatunde',
+      email: 'tmbabatunde@gmail.com',
+      password: 'password',
+      is_admin: false,
+    };
+    request(app)
+      .post('/api/v1/auth/register')
+      .set('Accept', 'application/json')
+      .send(user)
+      .end((err, res) => {
+        //console.log(res.body);
+        //expect(res).to.have.status(400);
+        expect(res.status).to.equal(400);
+        expect(res.body.success).to.equal(false);
+        expect(res.body.message).to.equal('Email already exist');
+        done();
+      });
+  });
+
+  it('should not register a user with empty first name', (done) => {
+    const user = {
+      first_name: '',
+      last_name: 'tmbabatunde',
+      email: 'tmbabatunde@gmail.com',
+      password: 'password',
+    };
+    request(app)
+      .post('/api/v1/auth/register')
+      .set('Accept', 'application/json')
+      .send(user)
+      .end((err, res) => {
+        //console.log(res.status);
+        expect(res.status).to.equal(400);
+        expect(res.body.success).to.equal(false);
+        expect(res.body.message).to.equal(
+          '"first_name" is not allowed to be empty'
+        );
+        done();
+      });
+  });
+
+  it('should not register a user with empty last name', (done) => {
+    const user = {
+      first_name: 'tmbabatunde',
+      last_name: '',
+      email: 'tmbabatunde@gmail.com',
+      password: 'password',
+    };
+    request(app)
+      .post('/api/v1/auth/register')
+      .set('Accept', 'application/json')
+      .send(user)
+      .end((err, res) => {
+        //console.log(res.body);
+        expect(res.status).to.equal(400);
+        expect(res.body.success).to.equal(false);
+        expect(res.body.message).to.equal(
+          '"last_name" is not allowed to be empty'
+        );
+        done();
+      });
+  });
+
+  it('should not register a user with empty email address', (done) => {
+    const user = {
+      first_name: 'tmbabatunde',
+      last_name: 'tmbabatunde',
+      email: '',
+      password: 'password',
+    };
+    request(app)
+      .post('/api/v1/auth/register')
+      .set('Accept', 'application/json')
+      .send(user)
+      .end((err, res) => {
+        //console.log(res.body);
+        expect(res.status).to.equal(400);
+        expect(res.body.success).to.equal(false);
+        expect(res.body.message).to.equal('"email" is not allowed to be empty');
+        done();
+      });
+  });
+
+  it('should not register a user with invalid email address', (done) => {
+    const user = {
+      first_name: 'tmbabatunde',
+      last_name: 'tmbabatunde',
+      email: 'tmbabatunde',
+      password: 'password',
+    };
+    request(app)
+      .post('/api/v1/auth/register')
+      .set('Accept', 'application/json')
+      .send(user)
+      .end((err, res) => {
+        //console.log(res.body);
+        expect(res.status).to.equal(400);
+        expect(res.body.success).to.equal(false);
+        expect(res.body.message).to.equal('"email" must be a valid email');
+        done();
+      });
+  });
+
+  it('should not register a user with empty password', (done) => {
+    const user = {
+      first_name: 'tmbabatunde',
+      last_name: 'tmbabatunde',
+      email: 'tmbabatunde@gmail.com',
+      password: '',
+    };
+    request(app)
+      .post('/api/v1/auth/register')
+      .set('Accept', 'application/json')
+      .send(user)
+      .end((err, res) => {
+        //console.log(res.body);
+        expect(res.status).to.equal(400);
+        expect(res.body.success).to.equal(false);
+        expect(res.body.message).to.equal(
+          '"password" is not allowed to be empty'
+        );
+        done();
+      });
+  });
+
+  it('POST /api/v1/auth/login/: Should log a user in.', (done) => {
+    const user = {
+      email: 'tmbabatunde@gmail.com',
+      password: 'password',
+    };
+    request(app)
+      .post('/api/v1/auth/login')
+      .set('Accept', 'application/json')
+      .send(user)
+      .end((err, res) => {
+        //console.log(res.body);
+        // expect(res.status).to.equal(201);
+        //expect(res.body.success).to.equal(true);
+
+        done();
+      });
+  });
+
+  // it('it should not login a user with incorrect or empty token', (done) => {
+  //   const user = {
+  //     email: 'tunde@gmail.com',
+  //     password: 'password',
+  //   };
+  //   request(app)
+  //     .post('/api/v1/auth/login')
+  //     .set('Accept', 'application/json')
+  //     .set('auth-token', token)
+  //     .send(user)
+  //     .end((err, res) => {
+  //       console.log(res.body);
+  //       // expect(res).to.have.status(401);
+  //       // expect(res.body).to.be.an('object');
+  //       // expect(res.body.error).to.equal('not authenticated');
+  //       done();
+  //     });
+  // });
+
+  it('should not login an unregistered user', (done) => {
+    request(app)
+      .post('/api/v1/auth/login')
+      .send({
+        email: 'michael@gmail.com',
+        password: 'johnson123',
+      })
+      .end((err, res) => {
+        //console.log(res.status);
+        expect(res.body.success).to.equal(false);
+        expect(res.body.message).to.equal('Invalid credentials');
+        done();
+      });
+  });
+
+  it('should not login a user with an invalid email address', (done) => {
+    request(app)
+      .post('/api/v1/auth/login')
+      .send({
+        email: '@gmail',
+        password: 'ghhhh$i0sdf',
+      })
+      .end((err, res) => {
+        // console.log(res.status);
+        expect(res.status).to.equal(400);
+        expect(res.body).to.be.an('object');
+        expect(res.body.success).to.equal(false);
+        expect(res.body.message).to.equal('"email" must be a valid email');
+        /*
+        expect(response.body.errors[0].msg).to.equal('Enter a valid email'); */
+        done();
+      });
+  });
+
+  it('should not login a user with an invalid password ', (done) => {
+    request(app)
+      .post('/api/v1/auth/login')
+      .send({
+        email: 'tunde@gmail.com',
+        password: 'passwordjj',
+      })
+      .end((error, res) => {
+        expect(res.status).to.equal(400);
+        expect(res.body).to.be.an('object');
+        expect(res.body.success).to.equal(false);
+        expect(res.body.message).to.equal('Invalid credentials');
+        done();
+      });
+  });
+
+  it('should not login a user with an empty email ', (done) => {
+    request(app)
+      .post('/api/v1/auth/login')
+      .send({
+        email: '',
+        password: 'password',
+      })
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        expect(res.body).to.be.an('object');
+        expect(res.body.success).to.equal(false);
+        expect(res.body.message).to.equal('"email" is not allowed to be empty');
+
+        done();
+      });
+  });
+
+  it('should not login a user with an empty password ', (done) => {
+    request(app)
+      .post('/api/v1/auth/login')
+      .send({
+        email: 'tunde@gmail.com',
+        password: '',
+      })
+      .end((error, res) => {
+        // console.log(res.body);
+        expect(res.status).to.equal(400);
+        expect(res.body).to.be.an('object');
+        expect(res.body.success).to.equal(false);
+        expect(res.body.message).to.equal(
+          '"password" is not allowed to be empty'
+        );
+
+        done();
+      });
+  });
+
+  /* it('It should create a new user', async () => {
+    const user = {
+      first_name: 'zaynab',
+      last_name: 'zaynab',
+      email: 'zaynab@gmail.com',
+      password: 'password',
+    };
+    let res = await request(app)
+      .post('/api/v1/auth/register')
+      .set('Accept', 'application/json')
+      .send(user);
+    expect(res).to.be.a('object');
+  });
+
+  it('It should login user', async () => {
+    const user = {
+      email: 'zaynab@gmail.com',
+      password: 'password',
+    };
+    let res = await request(app)
+      .post('/api/v1/auth/login')
+      .set('Accept', 'application/json')
+      .send(user);
+    expect(res).to.be.a('object');
+    expect(res.status).to.equal(200);
+  }); */
+
+  /* USERS ENDPOINT */
+  //
+  it('It should get all users', (done) => {
+    request(app)
+      .get('/api/v1/auth/getallusers')
+      .set('Accept', 'application/json')
+      .set('auth-token', token)
+      .end((err, res) => {
+        //console.log(res.body);
+
+        expect(res.status).to.equal(200);
+        expect(res.body).to.be.an('object');
+        expect(res.body.success).to.equal(true);
+        // expect(res.body.message).to.equal(
+        //   'retrieve leave requests successfully'
+        // );
+
+        done();
+      });
+  });
+
+  it('It should get a single user', (done) => {
+    request(app)
+      .get('/api/v1/auth/getuser/89')
+      .set('Accept', 'application/json')
+      .set('auth-token', token)
+      .end((err, res) => {
+        //console.log(res.body);
+        expect(res.body).to.be.an('object');
+        expect(res.body.success).to.equal(true);
+        expect(res.body.message.first_name).to.equal('max');
+
+        done();
+      });
+  });
+
+  it('It should not get user with invalid id', (done) => {
+    request(app)
+      .get('/api/v1/auth/getuser/18')
+      .set('Accept', 'application/json')
+      .set('auth-token', token)
+      .end((err, res) => {
+        //console.log(res.body.message);
+        expect(res.body).to.be.an('object');
+        expect(res.body.success).to.equal(false);
+        expect(res.body.message).to.equal('User not found');
+
+        done();
+      });
+  });
+
+  it('It should get current logged in user', (done) => {
+    request(app)
+      .get('/api/v1/auth/getcurrentuser')
+      .set('Accept', 'application/json')
+      .set('auth-token', token)
+      .end((err, res) => {
+        //console.log(res.body.message);
+        expect(res.status).to.equal(200);
+        expect(res.body).to.be.an('object');
+        expect(res.body.success).to.equal(true);
+        // expect(res.body.message).to.equal(
+        //   'retrieve leave requests successfully'
+        // );
+
+        done();
+      });
+  });
 });

@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS users(
 );
 `;
 
+//leave_id uuid DEFAULT uuid_generate_v4 (),
 const createLeaveRequestTable = `
   CREATE TABLE IF NOT EXISTS leaverequests(
     leave_id uuid DEFAULT uuid_generate_v4 (),
@@ -24,7 +25,7 @@ const createLeaveRequestTable = `
     end_date TIMESTAMP WITH TIME ZONE,
     leave_type VARCHAR(40),
     description TEXT,
-    status VARCHAR(10) DEFAULT 'pending',
+    leave_status VARCHAR(10) DEFAULT 'pending',
     created_on TIMESTAMP WITH TIME ZONE DEFAULT now(),
     PRIMARY KEY (leave_id)
   );

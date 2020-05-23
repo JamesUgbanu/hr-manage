@@ -1,17 +1,37 @@
-import UsersController from '../controllers/users';
-import LeaveController from '../controllers/leaverequests';
+import express from 'express';
+//import verify from '../middlewares/verifyToken';
+//import Authentication from '../middlewares/verifyToken';
+import protect from '../middlewares/verifyToken';
+import UserController from '../controllers/users';
+//import { verify } from 'jsonwebtoken';
 
-const routes = app => {
-  app.get('/api/v1/users', UsersController.getUsers);
-  app.get('/api/v1/users/:id', UsersController.getUserById);
-  app.post('/api/v1/users', UsersController.createUser);
-  app.put('/api/v1/users/:id', UsersController.updateUser);
-  app.delete('/api/v1/users/:id', UsersController.deleteUser);
-  app.get('/api/v1/leaverequests', LeaveController.getLeaveRequests);
-  app.get('/api/v1/leaverequests/:id', LeaveController.getLeaveRequestsById);
-  app.post('/api/v1/leaverequests', LeaveController.createLeaveRequests);
-  //app.put('/api/v1/leaverequests/:id', LeaveController.updateLeaveRequest);
-  app.put('/api/v1/leaverequests/:id', LeaveController.updateLeaveStatus);
-};
+const router = express.Router();
 
-export default routes;
+router.post('/register', UserController.signUp);
+router.post('/login', UserController.login);
+
+router.get(
+  '/getallusers',
+  protect.auth,
+  protect.authorize,
+  UserController.getUsers
+);
+router.get('/getcurrentuser', protect.auth, UserController.getCurrentUser);
+// router.delete(
+//   '/deleteById/:id',
+//   protect.auth,
+//   protect.authorize,
+//   UserController.deleteUser
+// );
+
+//router.post('/login/admin', verify, UserController.login);
+router.get('/getuser/:id', protect.auth, UserController.getUserById);
+
+// router.patch(
+//   '/updateuser/:id',
+//   protect.auth,
+//   protect.authorize,
+//   UserController.update
+// );
+
+export default router;
